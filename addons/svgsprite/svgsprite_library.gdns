@@ -1,0 +1,12 @@
+[gd_resource type="NativeScript" load_steps=2 format=2]
+
+[sub_resource type="GDNativeLibrary" id=1]
+entry/Windows.64 = "res://bin/win64/libgodot-svgsprite.dll"
+dependency/Windows.64 = [  ]
+
+[resource]
+resource_name = "SVGSprite"
+class_name = "SVGSprite"
+library = SubResource( 1 )
+script_class_name = "SVGSprite"
+script_class_icon_path = "res://addons/svgsprite/icon_svgsprite.svg"

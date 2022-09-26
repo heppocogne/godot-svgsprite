@@ -1,0 +1,7 @@
+[submodule "cpp/godot-cpp"]
+	path = cpp/godot-cpp
+	url = https://github.com/godotengine/godot-cpp
+	branch = 3.5
+[submodule "cpp/lunasvg"]
+	path = cpp/lunasvg
+	url = https://github.com/sammycage/lunasvg

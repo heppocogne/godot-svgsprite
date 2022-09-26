@@ -1,0 +1,5 @@
+.import/*
+*.dblite
+bin/*
+cpp/src/*.obj
+.vscode/*
