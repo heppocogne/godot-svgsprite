@@ -3,7 +3,6 @@
 #include <Image.hpp>
 #include <Vector2.hpp>
 #include <Transform2D.hpp>
-//#include <File.hpp>
 #include <ProjectSettings.hpp>
 
 #include <algorithm>
@@ -20,8 +19,8 @@ void SVGSprite::_register_methods()
             GODOT_METHOD_RPC_MODE_DISABLED, GODOT_PROPERTY_USAGE_DEFAULT, GODOT_PROPERTY_HINT_FILE, "*.svg");
     register_property<SVGSprite, bool>("centered", &SVGSprite::set_centered, &SVGSprite::get_centered, true);
     register_property<SVGSprite, Vector2>("offset", &SVGSprite::set_offset, &SVGSprite::get_offset, Vector2::ZERO);
-    //register_property<SVGSprite, bool>("centered", &SVGSprite::centered, true);
-    //register_property<SVGSprite, Vector2>("offset", &SVGSprite::offset, Vector2::ZERO);
+    register_property<SVGSprite, int>("texture_flags", &SVGSprite::set_texture_flags, &SVGSprite::get_texture_flags, 7, 
+            GODOT_METHOD_RPC_MODE_DISABLED, GODOT_PROPERTY_USAGE_DEFAULT, GODOT_PROPERTY_HINT_FLAGS, "Mipmaps,Repeat,Filter,Anisotropic Filter,Convert to Linear,Mirrored Repeat,Video Surface");
 }
 
 
@@ -45,6 +44,7 @@ void SVGSprite::_init()
     svg_file="";
     centered=true;
     offset=Vector2::ZERO;
+    texture_flags=7;
 }
 
 
@@ -101,7 +101,11 @@ void SVGSprite::_draw()
         if(_ref_texture->get_size()==ref_image->get_size())
             _ref_texture->set_data(ref_image);
         else
+        {
+            const auto flags=_ref_texture->get_flags();
             _ref_texture->create_from_image(ref_image);
+            _ref_texture->set_flags(flags);
+        }
         
         _cache_dirty=false;
     }
@@ -140,13 +144,23 @@ void SVGSprite::set_svg_file(String p_svg_file)
 }
 
 
-void SVGSprite::set_centered(bool p_centered){
+void SVGSprite::set_centered(bool p_centered)
+{
     centered=p_centered;
     update();
 }
 
 
-void SVGSprite::set_offset(Vector2 p_offset){
+void SVGSprite::set_offset(Vector2 p_offset)
+{
     offset=p_offset;
+    update();
+}
+
+
+void SVGSprite::set_texture_flags(int p_texture_flags)
+{
+    texture_flags=p_texture_flags;
+    _ref_texture->set_flags(texture_flags);
     update();
 }

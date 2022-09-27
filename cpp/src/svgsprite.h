@@ -27,6 +27,7 @@
             String svg_file;
             bool centered;
             Vector2 offset;
+            int texture_flags;
 
             static void _register_methods();
 
@@ -45,6 +46,8 @@
             bool get_centered()const{return centered;}
             void set_offset(Vector2 p_offset);
             Vector2 get_offset()const{return offset;}
+            void set_texture_flags(int p_texture_flags);
+            int get_texture_flags(void)const{return texture_flags;}
         };
     }
 
