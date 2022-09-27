@@ -21,6 +21,7 @@ _global_script_class_icons={
 [application]
 
 config/name="godot-svgsprite"
+run/main_scene="res://demo/demo.tscn"
 config/icon="res://icon.png"
 
 [editor_plugins]
