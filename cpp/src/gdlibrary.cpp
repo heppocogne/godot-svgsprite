@@ -11,6 +11,6 @@ extern "C" void GDN_EXPORT godot_gdnative_terminate(godot_gdnative_terminate_opt
 extern "C" void GDN_EXPORT godot_nativescript_init(void *handle) {
     godot::Godot::nativescript_init(handle);
 
-    //godot::register_class<godot::SVGSprite>();
+    // register classes here (use godot::register_class<ClassName>() for ordinal classes)
     godot::register_tool_class<godot::SVGSprite>();
 }
