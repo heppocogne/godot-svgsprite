@@ -11,6 +11,7 @@ script = ExtResource( 1 )
 position = Vector2( 0, -100 )
 scale = Vector2( 0.1, 0.1 )
 svg_file = "res://demo/icon_outlined.svg"
+texture_flags = 4
 
 [node name="SVGSprite2" parent="." instance=ExtResource( 2 )]
 position = Vector2( 0, 100 )
@@ -18,3 +19,4 @@ scale = Vector2( 0.25, 0.25 )
 svg_file = "res://demo/logo.svg"
 centered = false
 offset = Vector2( 216, 222 )
+texture_flags = 5
