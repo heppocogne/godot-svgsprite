@@ -12,7 +12,7 @@ _global_script_classes=[ {
 "base": "Node2D",
 "class": "SVGSprite",
 "language": "NativeScript",
-"path": "res://addons/svgsprite/svgsprite_library.gdns"
+"path": "res://addons/svg_sprite/svgsprite_library.gdns"
 } ]
 _global_script_class_icons={
 "SVGSprite": "res://addons/svgsprite/icon_svgsprite.svg"
@@ -22,6 +22,10 @@ _global_script_class_icons={
 
 config/name="godot-svgsprite"
 config/icon="res://icon.png"
+
+[editor_plugins]
+
+enabled=PoolStringArray( "res://addons/svg_sprite/plugin.cfg" )
 
 [gui]
 
