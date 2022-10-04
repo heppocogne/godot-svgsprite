@@ -7,6 +7,7 @@
 #include <ProjectSettings.hpp>
 
 #include <algorithm>
+#include <cstring>
 
 using namespace godot;
 
@@ -82,20 +83,17 @@ void SVGSprite::_draw()
         const int h_int=ceil(h);
 
         _bitmap_byte_array.resize(4*w_int*h_int);
-        auto bitmap_write=_bitmap_byte_array.write();
-        unsigned char* const bitmap_write_ptr=bitmap_write.ptr();
+        unsigned char* const bitmap_write_ptr=_bitmap_byte_array.write().ptr();
+        memset(bitmap_write_ptr,0,4*w_int*h_int);
         
-        lunasvg::Bitmap bitmap(w_int, h_int);
-        bitmap.clear(0);
+        lunasvg::Bitmap bitmap(bitmap_write_ptr, w_int, h_int, w_int*4);
         _svg_doc->render(bitmap, lunasvg::Matrix::scaled(gs.x, gs.y)
                                 *lunasvg::Matrix::translated((w-gs.x*_svg_doc->width())/2, (h-gs.y*_svg_doc->height())/2)
                                 *lunasvg::Matrix::rotated(tf2d.get_rotation()/Math_PI*180, w/2, h/2));
         // Bitmap:argb -> Image:rgba
+        if(bitmap.data()!=bitmap_write_ptr)
+            Godot::print_error("Cannot bind bitmap_write_ptr to Bitomap.data",__func__,__FILE__,__LINE__);
         bitmap.convertToRGBA();
-        auto bitmap_data=bitmap.data();
-        for(int i=0;i<_bitmap_byte_array.size();i++){
-            bitmap_write_ptr[i]=bitmap_data[i];
-        }
 
         Ref<Image> ref_image=Image::_new();
         ref_image->create_from_data(w_int, h_int, false, Image::FORMAT_RGBA8, _bitmap_byte_array);
@@ -143,11 +141,8 @@ void SVGSprite::set_svg_file(String p_svg_file)
         Godot::print_error(String("cannot open file (error code=")+Variant((int)ref_f->get_error())+String("):")+svg_file,String(__func__),String(__FILE__),__LINE__);
     
     PoolByteArray pva=ref_f->get_buffer(ref_f->get_len());
-    pva.append('\0');
-    //Godot::print("pva[pva.size()-1]=",Variant(pva[pva.size()-1]));
     _svg_doc=lunasvg::Document::loadFromData(reinterpret_cast<const char*>(pva.read().ptr()));
     
-    //_svg_doc=lunasvg::Document::loadFromFile(ProjectSettings::get_singleton()->globalize_path(svg_file).utf8().get_data());
     _cache_dirty=true;
     if(!_svg_doc)   // invalid image
         Godot::print_error("invalid svg file:"+svg_file,String(__func__),String(__FILE__),__LINE__);
