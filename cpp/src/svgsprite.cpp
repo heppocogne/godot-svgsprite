@@ -1,5 +1,6 @@
 #include "svgsprite.h"
 
+#include <File.hpp>
 #include <Image.hpp>
 #include <Vector2.hpp>
 #include <Transform2D.hpp>
@@ -137,7 +138,16 @@ void SVGSprite::set_svg_file(String p_svg_file)
 {
     svg_file=p_svg_file;
 
-    _svg_doc=lunasvg::Document::loadFromFile(ProjectSettings::get_singleton()->globalize_path(svg_file).utf8().get_data());
+    Ref<File> ref_f=File::_new();
+    if(ref_f->open(p_svg_file,File::READ)!=godot::Error::OK)
+        Godot::print_error(String("cannot open file (error code=")+Variant((int)ref_f->get_error())+String("):")+svg_file,String(__func__),String(__FILE__),__LINE__);
+    
+    PoolByteArray pva=ref_f->get_buffer(ref_f->get_len());
+    pva.append('\0');
+    //Godot::print("pva[pva.size()-1]=",Variant(pva[pva.size()-1]));
+    _svg_doc=lunasvg::Document::loadFromData(reinterpret_cast<const char*>(pva.read().ptr()));
+    
+    //_svg_doc=lunasvg::Document::loadFromFile(ProjectSettings::get_singleton()->globalize_path(svg_file).utf8().get_data());
     _cache_dirty=true;
     if(!_svg_doc)   // invalid image
         Godot::print_error("invalid svg file:"+svg_file,String(__func__),String(__FILE__),__LINE__);
