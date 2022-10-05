@@ -26,7 +26,7 @@
 
             static void _register_methods();
             
-            //SVGFile();
+            SVGFile():svg_doc(nullptr){}
             ~SVGFile(){}
 
             void _init();

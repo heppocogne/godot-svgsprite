@@ -31,9 +31,7 @@ void SVGFile::_set_path(String p_path)
 
     // svg files cannot be opened in standalone mode
     if(godot::OS::get_singleton()->has_feature("standalone"))
-    {
         return;
-    }
 
     Ref<File> ref_f=File::_new();
     if(ref_f->file_exists(p_path) && ref_f->open(p_path,File::READ)==godot::Error::OK)
@@ -41,9 +39,12 @@ void SVGFile::_set_path(String p_path)
         data=ref_f->get_as_text();
         PoolByteArray pba=ref_f->get_buffer(ref_f->get_len());
         svg_doc=lunasvg::Document::loadFromData(reinterpret_cast<const char*>(pba.read().ptr()));
+        ref_f->close();
     }else
     {
         Godot::print_error(String("cannot open file (error code=")+Variant((int)ref_f->get_error())+String("):")+path,__func__,__FILE__,__LINE__);
+        if(ref_f.is_valid())
+            ref_f->close();
         data="";
         svg_doc=nullptr;
     }

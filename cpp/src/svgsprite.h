@@ -34,7 +34,7 @@
             static void _register_methods();
 
             SVGSprite();
-            ~SVGSprite();
+            ~SVGSprite(){}
 
             void _init();
             void _ready();
