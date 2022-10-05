@@ -47,6 +47,7 @@ void SVGSprite::_init()
     centered=true;
     offset=Vector2::ZERO;
     texture_flags=7;
+    _ref_svg_file=Ref<SVGFile>(SVGFile::_new());
 }
 
 
@@ -58,7 +59,8 @@ void SVGSprite::_ready()
 
 void SVGSprite::_draw()
 {
-    if(!_svg_doc)   // invalid image
+    auto* const svg_doc=_ref_svg_file->svg_doc.get();
+    if(!svg_doc)   // invalid image
         return;
     
     Transform2D tf2d=get_global_transform();
@@ -67,12 +69,12 @@ void SVGSprite::_draw()
 
     const auto gs=tf2d.get_scale();
 
-    auto center=Vector2(_svg_doc->width(),_svg_doc->height())/2.0;
-    auto lb=Vector2(0.0,_svg_doc->height());
+    auto center=Vector2(svg_doc->width(),svg_doc->height())/2.0;
+    auto lb=Vector2(0.0,svg_doc->height());
     lb=tf2d.xform(lb);
-    auto rt=Vector2(_svg_doc->width(),0.0);
+    auto rt=Vector2(svg_doc->width(),0.0);
     rt=tf2d.xform(rt);
-    auto rb=Vector2(_svg_doc->width(),_svg_doc->height());
+    auto rb=Vector2(svg_doc->width(),svg_doc->height());
     rb=tf2d.xform(rb);
 
     auto w=std::max(abs(lb.x-rt.x), abs(rb.x));
@@ -87,8 +89,8 @@ void SVGSprite::_draw()
         memset(bitmap_write_ptr,0,4*w_int*h_int);
         
         lunasvg::Bitmap bitmap(bitmap_write_ptr, w_int, h_int, w_int*4);
-        _svg_doc->render(bitmap, lunasvg::Matrix::scaled(gs.x, gs.y)
-                                *lunasvg::Matrix::translated((w-gs.x*_svg_doc->width())/2, (h-gs.y*_svg_doc->height())/2)
+        svg_doc->render(bitmap, lunasvg::Matrix::scaled(gs.x, gs.y)
+                                *lunasvg::Matrix::translated((w-gs.x*svg_doc->width())/2, (h-gs.y*svg_doc->height())/2)
                                 *lunasvg::Matrix::rotated(tf2d.get_rotation()/Math_PI*180, w/2, h/2));
         // Bitmap:argb -> Image:rgba
         bitmap.convertToRGBA();
@@ -109,9 +111,9 @@ void SVGSprite::_draw()
 
     auto offset_raw=offset;
     if(centered){
-        offset_raw+=Vector2(_svg_doc->width(), _svg_doc->height())/2;
+        offset_raw+=Vector2(svg_doc->width(), svg_doc->height())/2;
     }
-    auto lt_in_texture=tf2d.xform(-Vector2(_svg_doc->width(), _svg_doc->height())/2 + offset_raw)+Vector2(w,h)/2;
+    auto lt_in_texture=tf2d.xform(-Vector2(svg_doc->width(), svg_doc->height())/2 + offset_raw)+Vector2(w,h)/2;
     draw_set_transform_matrix(tf2d.affine_inverse());
     draw_texture(_ref_texture, -lt_in_texture);
 }
@@ -132,22 +134,13 @@ void SVGSprite::_notification(int what)
 
 void SVGSprite::set_svg_file(String p_svg_file)
 {
+    Godot::print("set_svg_file()");
     svg_file=p_svg_file;
 
-    Ref<File> ref_f=File::_new();
-    if(ref_f->file_exists(p_svg_file) && ref_f->open(p_svg_file,File::READ)==godot::Error::OK)
-    {
-        PoolByteArray pva=ref_f->get_buffer(ref_f->get_len());
-        _svg_doc=lunasvg::Document::loadFromData(reinterpret_cast<const char*>(pva.read().ptr()));
-    }else
-    {
-        Godot::print_error(String("cannot open file (error code=")+Variant((int)ref_f->get_error())+String("):")+svg_file,__func__,__FILE__,__LINE__);
-        _svg_doc=nullptr;
-    }
-    
+    Godot::print("_new()");
+    _ref_svg_file->_set_path(p_svg_file);
+    Godot::print("_set_path()");
     _cache_dirty=true;
-    if(!_svg_doc)   // invalid image
-        Godot::print_error("invalid svg file:"+svg_file,__func__,__FILE__,__LINE__);
 }
 
 

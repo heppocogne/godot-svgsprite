@@ -5,6 +5,8 @@
     #include <Ref.hpp>
     #include <Node2D.hpp>
     #include <ImageTexture.hpp>
+    
+    #include "svg_file_resource.h"
 
     #include <memory>
     #include <lunasvg.h>
@@ -15,11 +17,11 @@
         {
             GODOT_CLASS(SVGSprite,Node2D)
 
-            std::unique_ptr<lunasvg::Document> _svg_doc;
             // rotation and scaling
             Transform2D _transform;
             PoolByteArray _bitmap_byte_array;
             Ref<ImageTexture> _ref_texture;
+            Ref<SVGFile> _ref_svg_file;
 
             bool _cache_dirty;
 
