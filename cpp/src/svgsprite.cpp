@@ -91,8 +91,6 @@ void SVGSprite::_draw()
                                 *lunasvg::Matrix::translated((w-gs.x*_svg_doc->width())/2, (h-gs.y*_svg_doc->height())/2)
                                 *lunasvg::Matrix::rotated(tf2d.get_rotation()/Math_PI*180, w/2, h/2));
         // Bitmap:argb -> Image:rgba
-        if(bitmap.data()!=bitmap_write_ptr)
-            Godot::print_error("Cannot bind bitmap_write_ptr to Bitomap.data",__func__,__FILE__,__LINE__);
         bitmap.convertToRGBA();
 
         Ref<Image> ref_image=Image::_new();
@@ -137,15 +135,19 @@ void SVGSprite::set_svg_file(String p_svg_file)
     svg_file=p_svg_file;
 
     Ref<File> ref_f=File::_new();
-    if(ref_f->open(p_svg_file,File::READ)!=godot::Error::OK)
-        Godot::print_error(String("cannot open file (error code=")+Variant((int)ref_f->get_error())+String("):")+svg_file,String(__func__),String(__FILE__),__LINE__);
-    
-    PoolByteArray pva=ref_f->get_buffer(ref_f->get_len());
-    _svg_doc=lunasvg::Document::loadFromData(reinterpret_cast<const char*>(pva.read().ptr()));
+    if(ref_f->file_exists(p_svg_file) && ref_f->open(p_svg_file,File::READ)==godot::Error::OK)
+    {
+        PoolByteArray pva=ref_f->get_buffer(ref_f->get_len());
+        _svg_doc=lunasvg::Document::loadFromData(reinterpret_cast<const char*>(pva.read().ptr()));
+    }else
+    {
+        Godot::print_error(String("cannot open file (error code=")+Variant((int)ref_f->get_error())+String("):")+svg_file,__func__,__FILE__,__LINE__);
+        _svg_doc=nullptr;
+    }
     
     _cache_dirty=true;
     if(!_svg_doc)   // invalid image
-        Godot::print_error("invalid svg file:"+svg_file,String(__func__),String(__FILE__),__LINE__);
+        Godot::print_error("invalid svg file:"+svg_file,__func__,__FILE__,__LINE__);
 }
 
 
