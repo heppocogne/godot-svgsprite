@@ -13,14 +13,9 @@
         class SVGFile:public Resource
         {
             GODOT_CLASS(SVGFile,Resource)
-            //Ref<Marshalls> marshalls;
-
-            //void _store_compressed_data(String p_data);
-            //String _decompress_data();
 
         public:
             String path;
-            //bool compressed;
             String data;
             std::unique_ptr<lunasvg::Document> svg_doc;
 
