@@ -29,7 +29,7 @@
             void _set_path(String p_path);
             String get_path()const{return path;}
             void _set_data(String p_data);
-            String get_data();
+            String _get_data();
         };
     }
 

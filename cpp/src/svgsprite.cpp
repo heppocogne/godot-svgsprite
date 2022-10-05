@@ -140,7 +140,6 @@ void SVGSprite::set_ref_svg_file(Ref<SVGFile> p_svg_file)
 {
     ref_svg_file=p_svg_file;
 
-    //ref_svg_file->_set_path(p_svg_file);
     _cache_dirty=true;
     update();
 }
