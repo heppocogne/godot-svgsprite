@@ -21,12 +21,11 @@
             Transform2D _transform;
             PoolByteArray _bitmap_byte_array;
             Ref<ImageTexture> _ref_texture;
-            Ref<SVGFile> _ref_svg_file;
 
             bool _cache_dirty;
 
         public:
-            String svg_file;
+            Ref<SVGFile> ref_svg_file;
             bool centered;
             Vector2 offset;
             int texture_flags;
@@ -41,8 +40,8 @@
             void _draw();
             void _notification(int what);
 
-            void set_svg_file(String p_svg_file);
-            String get_svg_file()const{return svg_file;}
+            void set_ref_svg_file(Ref<SVGFile> p_svg_file);
+            Ref<SVGFile> get_ref_svg_file()const{return ref_svg_file;}
 
             void set_centered(bool p_centered);
             bool get_centered()const{return centered;}
