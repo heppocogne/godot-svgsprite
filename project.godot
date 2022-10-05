@@ -9,12 +9,18 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "Resource",
+"class": "SVGFile",
+"language": "NativeScript",
+"path": "res://addons/svg_sprite/svg_file_library.gdns"
+}, {
 "base": "Node2D",
 "class": "SVGSprite",
 "language": "NativeScript",
 "path": "res://addons/svg_sprite/svgsprite_library.gdns"
 } ]
 _global_script_class_icons={
+"SVGFile": "res://addons/svgsprite/icon_svgsprite.svg",
 "SVGSprite": "res://addons/svgsprite/icon_svgsprite.svg"
 }
 
