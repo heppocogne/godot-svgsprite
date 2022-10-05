@@ -14,9 +14,10 @@ void SVGFile::_register_methods()
             GODOT_METHOD_RPC_MODE_DISABLED, GODOT_PROPERTY_USAGE_DEFAULT, GODOT_PROPERTY_HINT_FILE, "*.svg");
     //register_method("_set_path",&SVGFile::_set_path);
     register_method("get_path",&SVGFile::get_path);
-    register_property<SVGFile, String>("data", &SVGFile::_set_data, &SVGFile::get_data, "");
+    register_property<SVGFile, String>("data", &SVGFile::_set_data, &SVGFile::get_data, "",
+            GODOT_METHOD_RPC_MODE_DISABLED, GODOT_PROPERTY_USAGE_NOEDITOR);
     //register_method("_set_data",&SVGFile::_set_data);
-    register_method("get_data",&SVGFile::get_data);
+    //register_method("get_data",&SVGFile::get_data);
 }
 
 
