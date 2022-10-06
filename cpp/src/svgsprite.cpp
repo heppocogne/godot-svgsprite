@@ -17,7 +17,7 @@ void SVGSprite::_register_methods()
     register_method("_ready", &SVGSprite::_ready);
     register_method("_draw", &SVGSprite::_draw);
     register_method("_notification", &SVGSprite::_notification);
-    register_property<SVGSprite,Ref<SVGFile>>("svg_file", &SVGSprite::set_ref_svg_file, &SVGSprite::get_ref_svg_file, Ref<SVGFile>(nullptr));
+    register_property<SVGSprite,Ref<SVGFile>>("svg_file", &SVGSprite::set_ref_svg_file, &SVGSprite::get_ref_svg_file, nullptr);
     register_method("set_svg_file",&SVGSprite::set_ref_svg_file);
     register_method("get_svg_file",&SVGSprite::get_ref_svg_file);
     register_property<SVGSprite, bool>("centered", &SVGSprite::set_centered, &SVGSprite::get_centered, true);
@@ -34,6 +34,7 @@ void SVGSprite::_register_methods()
 
 
 SVGSprite::SVGSprite():
+    _ref_texture(ImageTexture::_new()),
     _cache_dirty(true)
 {
     
@@ -47,8 +48,7 @@ void SVGSprite::_init()
     offset=Vector2::ZERO;
     texture_flags=7;
 
-    _ref_texture=Ref<ImageTexture>(ImageTexture::_new());
-    ref_svg_file=Ref<SVGFile>(SVGFile::_new());
+    ref_svg_file=nullptr;
 }
 
 

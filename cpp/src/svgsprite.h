@@ -23,7 +23,6 @@
             Ref<ImageTexture> _ref_texture;
 
             bool _cache_dirty;
-
         public:
             Ref<SVGFile> ref_svg_file;
             bool centered;
