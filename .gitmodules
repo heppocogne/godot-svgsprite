@@ -5,5 +5,3 @@
 [submodule "cpp/lunasvg"]
 	path = cpp/lunasvg
 	url = https://github.com/sammycage/lunasvg
-[submodule "godot-cpp"]
-	url = https://github.com/heppocogne/godot-cpp
