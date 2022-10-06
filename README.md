@@ -4,13 +4,15 @@ GDNative addon for dynamic svg rendering
 
 ## How to use
 ### Build
-1. Clone this repository
+1. Clone this repository  
+   (Current directory=project root)
    ```
    git clone https://github.com/heppocogne/godot-svgsprite --recursive
    cd godot-svgsprite
    ```
 2. Build godot-cpp library  
-   For more information, please check the [official documentation](https://docs.godotengine.org/en/stable/tutorials/scripting/gdnative/gdnative_cpp_example.html).
+   For more information, please check the [official documentation](https://docs.godotengine.org/en/stable/tutorials/scripting/gdnative/gdnative_cpp_example.html).  
+   (Current directory=project root)
    ```
    cd cpp/godot-cpp
    scons platform=<platform> generate_bindings=yes -j4
@@ -20,7 +22,8 @@ GDNative addon for dynamic svg rendering
    ```
    cd ../../
    ```
-3. Build godot-svgsprite library
+3. Build godot-svgsprite library  
+   (Current directory=project root)
    ```
    mkdir bin
    scons platform=<platform> target_name=libgodot-svgsprite
