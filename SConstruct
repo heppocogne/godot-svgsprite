@@ -86,8 +86,13 @@ env.Append(CPPPATH=[
     cpp_bindings_path + 'include/core/',
     cpp_bindings_path + 'include/gen/'],
 )
+## godot-cpp
 env.Append(LIBPATH=[cpp_bindings_path + 'bin/'])
 env.Append(LIBS=[cpp_library])
+
+## lunasvg
+env.Append(LIBPATH=['cpp/lunasvg_build'])
+env.Append(LIBS=['lunasvg.lib'])
 
 # tweak this if you want to use different folders, or more folders, to store your source code in.
 env.Append(CPPPATH=[
@@ -106,11 +111,6 @@ def add_sources(sources, dir, extension):
 
 
 sources = []
-## lunasvg
-add_sources(sources, 'cpp/lunasvg/3rdparty/plutovg', 'c')
-add_sources(sources, 'cpp/lunasvg/3rdparty/software', 'c')
-add_sources(sources, 'cpp/lunasvg/source', 'cpp')
-
 ## godot-svgsprite
 add_sources(sources, 'cpp/src', 'cpp')
 

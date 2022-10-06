@@ -15,18 +15,27 @@ GDNative addon for dynamic svg rendering
    (Current directory=project root)
    ```
    cd cpp/godot-cpp
-   scons platform=<platform> generate_bindings=yes -j4
+   scons platform=<platform> generate_bindings=yes target=debug/release
    ```
    (wait a minute)
     
    ```
+   cd ../
+   ```
+3. Build lunasvg library  
+   (Current directory=cpp/)
+   ```
+   mkdir lunasvg_build
+   cd lunasvg_build
+   cmake -DCMAKE_BUILD_TARGET=Debug/Release ../lunasvg
+   ninja
    cd ../../
    ```
-3. Build godot-svgsprite library  
+4. Build godot-svgsprite library  
    (Current directory=project root)
    ```
    mkdir bin
-   scons platform=<platform> target_name=libgodot-svgsprite
+   scons platform=<platform> target_name=libgodot-svgsprite target=debug/release
    ```
 ### Enjoy the demo project!
 ### Install addon
