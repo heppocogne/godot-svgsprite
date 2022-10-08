@@ -5,8 +5,11 @@
 #include <Vector2.hpp>
 #include <Transform2D.hpp>
 //#include <ProjectSettings.hpp>
+#include <GodotGlobal.hpp>
+#ifndef EDITOR_FEATURE_DISABLED
 #include <Engine.hpp>
 #include <ResourceLoader.hpp>
+#endif
 
 #include <algorithm>
 #include <cstring>
@@ -179,8 +182,9 @@ void SVGSprite::set_svg_file(String p_svg_file)
         godot::Error err=ref_f->open(rawsvg_file,File::READ);
         if(err==godot::Error::OK)
         {
-            PoolByteArray pba=ref_f->get_buffer(ref_f->get_len());
-            _svg_doc=lunasvg::Document::loadFromData(reinterpret_cast<const char*>(pba.read().ptr()));
+            char* buf=ref_f->get_as_text().alloc_c_string();
+            _svg_doc=lunasvg::Document::loadFromData(const_cast<const char*>(buf));
+            godot::api->godot_free(buf);
             if(!_svg_doc)
                 Godot::print_error("invalid svg file:"+svg_file,__func__,__FILE__,__LINE__);
             else
@@ -200,8 +204,9 @@ void SVGSprite::set_svg_file(String p_svg_file)
         godot::Error err=ref_f->open(rawsvg_file,File::READ);
         if(err==godot::Error::OK)
         {
-            PoolByteArray pba=ref_f->get_buffer(ref_f->get_len());
-            _svg_doc=lunasvg::Document::loadFromData(reinterpret_cast<const char*>(pba.read().ptr()));
+            char* buf=ref_f->get_as_text().alloc_c_string();
+            _svg_doc=lunasvg::Document::loadFromData(const_cast<const char*>(buf));
+            godot::api->godot_free(buf);
             if(!_svg_doc)
                 Godot::print_error("invalid svg file:"+rawsvg_file,__func__,__FILE__,__LINE__);
         }else
