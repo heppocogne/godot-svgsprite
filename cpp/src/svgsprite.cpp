@@ -179,8 +179,8 @@ void SVGSprite::set_svg_file(String p_svg_file)
         godot::Error err=ref_f->open(rawsvg_file,File::READ);
         if(err==godot::Error::OK)
         {
-            PoolByteArray pva=ref_f->get_buffer(ref_f->get_len());
-            _svg_doc=lunasvg::Document::loadFromData(reinterpret_cast<const char*>(pva.read().ptr()));
+            PoolByteArray pba=ref_f->get_buffer(ref_f->get_len());
+            _svg_doc=lunasvg::Document::loadFromData(reinterpret_cast<const char*>(pba.read().ptr()));
             if(!_svg_doc)
                 Godot::print_error("invalid svg file:"+svg_file,__func__,__FILE__,__LINE__);
             else
@@ -200,8 +200,8 @@ void SVGSprite::set_svg_file(String p_svg_file)
         godot::Error err=ref_f->open(rawsvg_file,File::READ);
         if(err==godot::Error::OK)
         {
-            PoolByteArray pva=ref_f->get_buffer(ref_f->get_len());
-            _svg_doc=lunasvg::Document::loadFromData(reinterpret_cast<const char*>(pva.read().ptr()));
+            PoolByteArray pba=ref_f->get_buffer(ref_f->get_len());
+            _svg_doc=lunasvg::Document::loadFromData(reinterpret_cast<const char*>(pba.read().ptr()));
             if(!_svg_doc)
                 Godot::print_error("invalid svg file:"+rawsvg_file,__func__,__FILE__,__LINE__);
         }else
