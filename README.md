@@ -27,7 +27,7 @@ GDNative addon for dynamic svg rendering
    ```
    mkdir lunasvg_build
    cd lunasvg_build
-   cmake -DCMAKE_BUILD_TARGET=Debug/Release ../lunasvg
+   cmake -DCMAKE_BUILD_TYPE=Debug/Release ../lunasvg
    ninja
    cd ../../
    ```

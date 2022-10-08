@@ -4,3 +4,4 @@ bin/*
 cpp/src/*.obj
 .vscode/*
 cpp/lunasvg_build/*
+_rawsvg/*

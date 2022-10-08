@@ -5,8 +5,6 @@
     #include <Ref.hpp>
     #include <Node2D.hpp>
     #include <ImageTexture.hpp>
-    
-    #include "svg_file_resource.h"
 
     #include <memory>
     #include <lunasvg.h>
@@ -17,30 +15,34 @@
         {
             GODOT_CLASS(SVGSprite,Node2D)
 
+            std::unique_ptr<lunasvg::Document> _svg_doc;
             // rotation and scaling
             Transform2D _transform;
             PoolByteArray _bitmap_byte_array;
             Ref<ImageTexture> _ref_texture;
 
             bool _cache_dirty;
+            constexpr static const char* _rawsvg_root="res://_rawsvg";
+
         public:
-            Ref<SVGFile> ref_svg_file;
+            String svg_file;
             bool centered;
             Vector2 offset;
             int texture_flags;
 
             static void _register_methods();
+            static String get_rawsvg_path(String path);
 
             SVGSprite();
-            ~SVGSprite(){}
+            ~SVGSprite();
 
             void _init();
             void _ready();
             void _draw();
             void _notification(int what);
 
-            void set_ref_svg_file(Ref<SVGFile> p_svg_file);
-            Ref<SVGFile> get_ref_svg_file()const{return ref_svg_file;}
+            void set_svg_file(String p_svg_file);
+            String get_svg_file()const{return svg_file;}
 
             void set_centered(bool p_centered);
             bool get_centered()const{return centered;}
