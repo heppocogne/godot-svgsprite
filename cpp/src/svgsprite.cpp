@@ -4,7 +4,8 @@
 #include <Image.hpp>
 #include <Vector2.hpp>
 #include <Transform2D.hpp>
-#include <ProjectSettings.hpp>
+//#include <ProjectSettings.hpp>
+#include <OS.hpp>
 
 #include <algorithm>
 #include <cstring>
@@ -66,7 +67,7 @@ void SVGSprite::_draw()
 {
     if(!_svg_doc)   // invalid image
         return;
-    
+
     Transform2D tf2d=get_global_transform();
     const auto go=tf2d.get_origin();
     tf2d.set_origin(Vector2(0.0,0.0));
@@ -142,22 +143,44 @@ void SVGSprite::set_svg_file(String p_svg_file)
 
     Ref<File> ref_f=File::_new();
     const String rawsvg_file=get_rawsvg_path(svg_file);
-    if(
-        (ref_f->file_exists(rawsvg_file) && ref_f->open(rawsvg_file,File::READ)==godot::Error::OK)
-        ||(ref_f->file_exists(svg_file) && ref_f->open(svg_file,File::READ)==godot::Error::OK)
-    )
+    godot::Error err=godot::Error::ERR_UNCONFIGURED;
+    if(ref_f->file_exists(svg_file))
     {
-        PoolByteArray pva=ref_f->get_buffer(ref_f->get_len());
-        _svg_doc=lunasvg::Document::loadFromData(reinterpret_cast<const char*>(pva.read().ptr()));
-    }else
-    {
-        Godot::print_error(String("cannot open file (error code=")+Variant((int)ref_f->get_error())+String("):")+svg_file,__func__,__FILE__,__LINE__);
-        _svg_doc=nullptr;
+        godot::Error err=ref_f->open(rawsvg_file,File::READ);
+        if(err==godot::Error::OK)
+        {
+            PoolByteArray pva=ref_f->get_buffer(ref_f->get_len());
+            _svg_doc=lunasvg::Document::loadFromData(reinterpret_cast<const char*>(pva.read().ptr()));
+            if(!_svg_doc)
+                Godot::print_error("invalid svg file:"+svg_file,__func__,__FILE__,__LINE__);
+            else
+            {
+                _cache_dirty=true;
+                return;
+            }
+        }else
+        {
+            _svg_doc=nullptr;
+            Godot::print_error(String("cannot open file (error code=")+Variant((int)err)+String("):")+svg_file,__func__,__FILE__,__LINE__);
+        }
     }
-    
+    if(ref_f->file_exists(rawsvg_file))
+    {
+        godot::Error err=ref_f->open(rawsvg_file,File::READ);
+        if(err==godot::Error::OK)
+        {
+            PoolByteArray pva=ref_f->get_buffer(ref_f->get_len());
+            _svg_doc=lunasvg::Document::loadFromData(reinterpret_cast<const char*>(pva.read().ptr()));
+            if(!_svg_doc)
+                Godot::print_error("invalid svg file:"+rawsvg_file,__func__,__FILE__,__LINE__);
+        }else
+        {
+            _svg_doc=nullptr;
+            Godot::print_error(String("cannot open file (error code=")+Variant((int)err)+String("):")+rawsvg_file,__func__,__FILE__,__LINE__);
+        }
+    }else
+        Godot::print_error(String("neither ")+svg_file+String(" nor ")+rawsvg_file+String(" exists"),__func__,__FILE__,__LINE__);
     _cache_dirty=true;
-    if(!_svg_doc)   // invalid image
-        Godot::print_error("invalid svg file:"+svg_file,__func__,__FILE__,__LINE__);
 }
 
 
