@@ -19,4 +19,6 @@ scale = Vector2( 0.25, 0.25 )
 svg_file = "res://demo/logo.svg"
 centered = false
 offset = Vector2( 216, 222 )
+flip_h = true
+flip_v = true
 texture_flags = 5
