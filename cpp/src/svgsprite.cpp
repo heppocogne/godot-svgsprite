@@ -5,7 +5,8 @@
 #include <Vector2.hpp>
 #include <Transform2D.hpp>
 //#include <ProjectSettings.hpp>
-#include <OS.hpp>
+#include <Engine.hpp>
+#include <ResourceLoader.hpp>
 
 #include <algorithm>
 #include <cstring>
@@ -35,7 +36,12 @@ void SVGSprite::_register_methods()
 
 SVGSprite::SVGSprite():
     _cache_dirty(true),
+#ifndef EDITOR_FEATURE_DISABLED
+    _ref_texture(ImageTexture::_new()),
+    _ref_prerasterized(nullptr)
+#else
     _ref_texture(ImageTexture::_new())
+#endif
 {
 
 }
@@ -65,6 +71,21 @@ void SVGSprite::_ready()
 
 void SVGSprite::_draw()
 {
+#ifndef EDITOR_FEATURE_DISABLED
+    // use pre-rasterized texture
+    if(Engine::get_singleton()->is_editor_hint())
+    {
+        if(_ref_prerasterized.is_valid())
+        {
+            if(centered)
+                draw_texture(_ref_prerasterized,-(offset+Vector2(_svg_doc->width(), _svg_doc->height())/2));
+            else
+                draw_texture(_ref_prerasterized,-offset);
+        }
+        return;
+    }
+#endif
+
     if(!_svg_doc)   // invalid image
         return;
 
@@ -126,6 +147,11 @@ void SVGSprite::_draw()
 
 void SVGSprite::_notification(int what)
 {
+#ifndef EDITOR_FEATURE_DISABLED
+    if(Engine::get_singleton()->is_editor_hint())
+        return;
+#endif
+
     if(what==NOTIFICATION_TRANSFORM_CHANGED){
         auto gtf=get_global_transform();
         if(_transform[0]==gtf[0] && _transform[1]==gtf[1])
@@ -140,6 +166,10 @@ void SVGSprite::_notification(int what)
 void SVGSprite::set_svg_file(String p_svg_file)
 {
     svg_file=p_svg_file;
+
+#ifndef EDITOR_FEATURE_DISABLED
+    _ref_prerasterized=ResourceLoader::get_singleton()->load(svg_file);
+#endif
 
     Ref<File> ref_f=File::_new();
     const String rawsvg_file=get_rawsvg_path(svg_file);
@@ -156,6 +186,7 @@ void SVGSprite::set_svg_file(String p_svg_file)
             else
             {
                 _cache_dirty=true;
+                update();
                 return;
             }
         }else
@@ -181,6 +212,7 @@ void SVGSprite::set_svg_file(String p_svg_file)
     }else
         Godot::print_error(String("neither ")+svg_file+String(" nor ")+rawsvg_file+String(" exists"),__func__,__FILE__,__LINE__);
     _cache_dirty=true;
+    update();
 }
 
 

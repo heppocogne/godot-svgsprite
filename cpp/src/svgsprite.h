@@ -20,7 +20,9 @@
             Transform2D _transform;
             PoolByteArray _bitmap_byte_array;
             Ref<ImageTexture> _ref_texture;
-
+    #ifndef EDITOR_FEATURE_DISABLED
+            Ref<Texture> _ref_prerasterized;
+    #endif
             bool _cache_dirty;
             constexpr static const char* _rawsvg_root="res://_rawsvg";
 
