@@ -30,10 +30,17 @@ void SVGSprite::_register_methods()
     register_property<SVGSprite, Vector2>("offset", &SVGSprite::set_offset, &SVGSprite::get_offset, Vector2::ZERO);
     register_method("set_offset",&SVGSprite::set_offset);
     register_method("get_offset",&SVGSprite::get_offset);
+    register_property<SVGSprite,bool>("flip_h",&SVGSprite::set_flip_h,&SVGSprite::get_flip_h,false);
+    register_method("set_flip_h",&SVGSprite::set_flip_h);
+    register_method("get_flip_h",&SVGSprite::get_flip_h);
+    register_property<SVGSprite,bool>("flip_v",&SVGSprite::set_flip_v,&SVGSprite::get_flip_v,false);
+    register_method("set_flip_v",&SVGSprite::set_flip_v);
+    register_method("get_flip_v",&SVGSprite::get_flip_v);
     register_property<SVGSprite, int>("texture_flags", &SVGSprite::set_texture_flags, &SVGSprite::get_texture_flags, 7, 
             GODOT_METHOD_RPC_MODE_DISABLED, GODOT_PROPERTY_USAGE_DEFAULT, GODOT_PROPERTY_HINT_FLAGS, "Mipmaps,Repeat,Filter,Anisotropic Filter,Convert to Linear,Mirrored Repeat,Video Surface");
     register_method("set_texture_flags",&SVGSprite::set_texture_flags);
     register_method("get_texture_flags",&SVGSprite::get_texture_flags);
+    register_method("get_size",&SVGSprite::get_size);
 }
 
 
@@ -63,6 +70,8 @@ void SVGSprite::_init()
     centered=true;
     offset=Vector2::ZERO;
     texture_flags=7;
+    flip_h=false;
+    flip_v=false;
 }
 
 
@@ -80,10 +89,14 @@ void SVGSprite::_draw()
     {
         if(_ref_prerasterized.is_valid())
         {
+            Rect2 rect(-offset,get_size());
             if(centered)
-                draw_texture(_ref_prerasterized,-(offset+Vector2(_svg_doc->width(), _svg_doc->height())/2));
-            else
-                draw_texture(_ref_prerasterized,-offset);
+                rect.position-=Vector2(_svg_doc->width(), _svg_doc->height())/2;
+            if(flip_h)
+                rect.size.x*=-1;
+            if(flip_v)
+                rect.size.y*=-1;
+            draw_texture_rect(_ref_prerasterized,rect,false);
         }
         return;
     }
@@ -95,8 +108,6 @@ void SVGSprite::_draw()
     Transform2D tf2d=get_global_transform();
     const auto go=tf2d.get_origin();
     tf2d.set_origin(Vector2(0.0,0.0));
-
-    const auto gs=tf2d.get_scale();
 
     auto center=Vector2(_svg_doc->width(),_svg_doc->height())/2.0;
     auto lb=Vector2(0.0,_svg_doc->height());
@@ -116,11 +127,18 @@ void SVGSprite::_draw()
         _bitmap_byte_array.resize(4*w_int*h_int);
         unsigned char* const bitmap_write_ptr=_bitmap_byte_array.write().ptr();
         memset(bitmap_write_ptr,0,4*w_int*h_int);
+
+        auto gs=tf2d.get_scale();
+        if(flip_h)
+            gs.x*=-1;
+        if(flip_v)
+            gs.y*=-1;
         
         lunasvg::Bitmap bitmap(bitmap_write_ptr, w_int, h_int, w_int*4);
-        _svg_doc->render(bitmap, lunasvg::Matrix::scaled(gs.x, gs.y)
-                                *lunasvg::Matrix::translated((w-gs.x*_svg_doc->width())/2, (h-gs.y*_svg_doc->height())/2)
-                                *lunasvg::Matrix::rotated(tf2d.get_rotation()/Math_PI*180, w/2, h/2));
+        auto mat=lunasvg::Matrix::scaled(gs.x, gs.y)
+                *lunasvg::Matrix::translated((w-gs.x*_svg_doc->width())/2, (h-gs.y*_svg_doc->height())/2);
+        mat*=lunasvg::Matrix::rotated(tf2d.get_rotation()/Math_PI*180, w/2, h/2);
+        _svg_doc->render(bitmap, mat);
         // Bitmap:argb -> Image:rgba
         bitmap.convertToRGBA();
 
@@ -142,7 +160,7 @@ void SVGSprite::_draw()
     if(centered){
         offset_raw+=Vector2(_svg_doc->width(), _svg_doc->height())/2;
     }
-    auto lt_in_texture=tf2d.xform(-Vector2(_svg_doc->width(), _svg_doc->height())/2 + offset_raw)+Vector2(w,h)/2;
+    auto lt_in_texture=tf2d.xform(-get_size()/2 + offset_raw)+Vector2(w,h)/2;
     draw_set_transform_matrix(tf2d.affine_inverse());
     draw_texture(_ref_texture, -lt_in_texture);
 }
@@ -239,6 +257,29 @@ void SVGSprite::set_texture_flags(int p_texture_flags)
 {
     texture_flags=p_texture_flags;
     _ref_texture->set_flags(texture_flags);
+    update();
+}
+
+
+Vector2 SVGSprite::get_size()const
+{
+    if(_svg_doc)
+        return Vector2(_svg_doc->width(),_svg_doc->height());
+    else
+        return Vector2::ZERO;
+}
+
+
+void SVGSprite::set_flip_h(bool p_flip_h)
+{
+    flip_h=p_flip_h;
+    update();
+}
+
+
+void SVGSprite::set_flip_v(bool p_flip_v)
+{
+    flip_v=p_flip_v;
     update();
 }
 

@@ -31,6 +31,8 @@
             bool centered;
             Vector2 offset;
             int texture_flags;
+            bool flip_h;
+            bool flip_v;
 
             static void _register_methods();
             static String get_rawsvg_path(String path);
@@ -50,8 +52,14 @@
             bool get_centered()const{return centered;}
             void set_offset(Vector2 p_offset);
             Vector2 get_offset()const{return offset;}
+            void set_flip_h(bool p_flip_h);
+            bool get_flip_h()const{return flip_h;}
+            void set_flip_v(bool p_flip_v);
+            bool get_flip_v()const{return flip_v;}
             void set_texture_flags(int p_texture_flags);
             int get_texture_flags(void)const{return texture_flags;}
+
+            Vector2 get_size()const;
         };
     }
 
