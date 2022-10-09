@@ -24,6 +24,8 @@ void SVGSprite::_register_methods()
     register_method("_notification", &SVGSprite::_notification);
     register_property<SVGSprite,String>("svg_file", &SVGSprite::set_svg_file, &SVGSprite::get_svg_file, "", 
             GODOT_METHOD_RPC_MODE_DISABLED, GODOT_PROPERTY_USAGE_DEFAULT, GODOT_PROPERTY_HINT_FILE, "*.svg");
+    register_method("set_svg_file",&SVGSprite::set_svg_file);
+    register_method("get_svg_file",&SVGSprite::get_svg_file);
     register_property<SVGSprite, bool>("centered", &SVGSprite::set_centered, &SVGSprite::get_centered, true);
     register_method("set_centered",&SVGSprite::set_centered);
     register_method("get_centered",&SVGSprite::get_centered);
