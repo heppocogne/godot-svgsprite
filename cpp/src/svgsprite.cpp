@@ -193,49 +193,54 @@ void SVGSprite::set_svg_file(String p_svg_file)
 #ifndef EDITOR_FEATURE_DISABLED
     _ref_prerasterized=ResourceLoader::get_singleton()->load(svg_file);
 #endif
-
-    Ref<File> ref_f=File::_new();
-    const String rawsvg_file=get_rawsvg_path(svg_file);
-    godot::Error err=godot::Error::ERR_UNCONFIGURED;
-    if(ref_f->file_exists(svg_file))
+    if(svg_file=="")
     {
-        godot::Error err=ref_f->open(rawsvg_file,File::READ);
-        if(err==godot::Error::OK)
+        _svg_doc=nullptr;
+    }else
+    {
+        Ref<File> ref_f=File::_new();
+        const String rawsvg_file=get_rawsvg_path(svg_file);
+        godot::Error err=godot::Error::ERR_UNCONFIGURED;
+        if(ref_f->file_exists(svg_file))
         {
-            char* buf=ref_f->get_as_text().alloc_c_string();
-            _svg_doc=lunasvg::Document::loadFromData(const_cast<const char*>(buf));
-            godot::api->godot_free(buf);
-            if(!_svg_doc)
-                Godot::print_error("invalid svg file:"+svg_file,__func__,__FILE__,__LINE__);
-            else
+            godot::Error err=ref_f->open(rawsvg_file,File::READ);
+            if(err==godot::Error::OK)
             {
-                _cache_dirty=true;
-                update();
-                return;
+                char* buf=ref_f->get_as_text().alloc_c_string();
+                _svg_doc=lunasvg::Document::loadFromData(const_cast<const char*>(buf));
+                godot::api->godot_free(buf);
+                if(!_svg_doc)
+                    Godot::print_error("invalid svg file:"+svg_file,__func__,__FILE__,__LINE__);
+                else
+                {
+                    _cache_dirty=true;
+                    update();
+                    return;
+                }
+            }else
+            {
+                _svg_doc=nullptr;
+                Godot::print_error(String("cannot open file (error code=")+Variant((int)err)+String("):")+svg_file,__func__,__FILE__,__LINE__);
+            }
+        }
+        if(ref_f->file_exists(rawsvg_file))
+        {
+            godot::Error err=ref_f->open(rawsvg_file,File::READ);
+            if(err==godot::Error::OK)
+            {
+                char* buf=ref_f->get_as_text().alloc_c_string();
+                _svg_doc=lunasvg::Document::loadFromData(const_cast<const char*>(buf));
+                godot::api->godot_free(buf);
+                if(!_svg_doc)
+                    Godot::print_error("invalid svg file:"+rawsvg_file,__func__,__FILE__,__LINE__);
+            }else
+            {
+                _svg_doc=nullptr;
+                Godot::print_error(String("cannot open file (error code=")+Variant((int)err)+String("):")+rawsvg_file,__func__,__FILE__,__LINE__);
             }
         }else
-        {
-            _svg_doc=nullptr;
-            Godot::print_error(String("cannot open file (error code=")+Variant((int)err)+String("):")+svg_file,__func__,__FILE__,__LINE__);
-        }
+            Godot::print_error(String("neither ")+svg_file+String(" nor ")+rawsvg_file+String(" exists"),__func__,__FILE__,__LINE__);
     }
-    if(ref_f->file_exists(rawsvg_file))
-    {
-        godot::Error err=ref_f->open(rawsvg_file,File::READ);
-        if(err==godot::Error::OK)
-        {
-            char* buf=ref_f->get_as_text().alloc_c_string();
-            _svg_doc=lunasvg::Document::loadFromData(const_cast<const char*>(buf));
-            godot::api->godot_free(buf);
-            if(!_svg_doc)
-                Godot::print_error("invalid svg file:"+rawsvg_file,__func__,__FILE__,__LINE__);
-        }else
-        {
-            _svg_doc=nullptr;
-            Godot::print_error(String("cannot open file (error code=")+Variant((int)err)+String("):")+rawsvg_file,__func__,__FILE__,__LINE__);
-        }
-    }else
-        Godot::print_error(String("neither ")+svg_file+String(" nor ")+rawsvg_file+String(" exists"),__func__,__FILE__,__LINE__);
     _cache_dirty=true;
     update();
 }
