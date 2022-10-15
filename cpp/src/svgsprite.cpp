@@ -85,6 +85,9 @@ void SVGSprite::_ready()
 
 void SVGSprite::_draw()
 {
+    if(!_svg_doc)   // invalid image
+        return;
+    
 #ifndef EDITOR_FEATURE_DISABLED
     // use pre-rasterized texture
     if(Engine::get_singleton()->is_editor_hint())
@@ -103,9 +106,6 @@ void SVGSprite::_draw()
         return;
     }
 #endif
-
-    if(!_svg_doc)   // invalid image
-        return;
 
     Transform2D tf2d=get_global_transform();
     const auto go=tf2d.get_origin();
@@ -190,14 +190,17 @@ void SVGSprite::set_svg_file(String p_svg_file)
 {
     svg_file=p_svg_file;
 
-#ifndef EDITOR_FEATURE_DISABLED
-    _ref_prerasterized=ResourceLoader::get_singleton()->load(svg_file);
-#endif
     if(svg_file=="")
     {
+#ifndef EDITOR_FEATURE_DISABLED
+        _ref_prerasterized=nullptr;
+#endif
         _svg_doc=nullptr;
     }else
     {
+#ifndef EDITOR_FEATURE_DISABLED
+        _ref_prerasterized=ResourceLoader::get_singleton()->load(svg_file);
+#endif
         Ref<File> ref_f=File::_new();
         const String rawsvg_file=get_rawsvg_path(svg_file);
         if(ref_f->open(rawsvg_file,File::READ)==godot::Error::OK)
