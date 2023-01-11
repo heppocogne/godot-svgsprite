@@ -4,7 +4,7 @@
 #include <Image.hpp>
 #include <Vector2.hpp>
 #include <Transform2D.hpp>
-// #include <ProjectSettings.hpp>
+#include <ProjectSettings.hpp>
 #include <GodotGlobal.hpp>
 #ifndef EDITOR_FEATURE_DISABLED
 #include <Engine.hpp>
@@ -13,6 +13,7 @@
 
 #include <algorithm>
 #include <cstring>
+#include "rawsvg_loader.h"
 
 using namespace godot;
 
@@ -46,11 +47,10 @@ void SVGSprite::_register_methods()
 }
 
 SVGSprite::SVGSprite() : _cache_dirty(true),
-#ifndef EDITOR_FEATURE_DISABLED
+                         _svg_doc(nullptr),
                          _ref_texture(ImageTexture::_new()),
+#ifndef EDITOR_FEATURE_DISABLED
                          _ref_prerasterized(nullptr)
-#else
-                         _ref_texture(ImageTexture::_new())
 #endif
 {
 }
@@ -181,36 +181,17 @@ void SVGSprite::_notification(int what)
 void SVGSprite::set_svg_file(String p_svg_file)
 {
     svg_file = p_svg_file;
-
+#ifndef EDITOR_FEATURE_DISABLED
     if (svg_file == "")
-    {
-#ifndef EDITOR_FEATURE_DISABLED
         _ref_prerasterized = nullptr;
-#endif
-        _svg_doc = nullptr;
-    }
     else
-    {
-#ifndef EDITOR_FEATURE_DISABLED
         _ref_prerasterized = ResourceLoader::get_singleton()->load(svg_file);
-#endif
-        Ref<File> ref_f = File::_new();
-        const String rawsvg_file = get_rawsvg_path(svg_file);
-        if (ref_f->open(rawsvg_file, File::READ) == godot::Error::OK)
-        {
-            char *buf = ref_f->get_as_text().alloc_c_string();
-            _svg_doc = lunasvg::Document::loadFromData(const_cast<const char *>(buf));
-            godot::api->godot_free(buf);
-            if (!_svg_doc)
-                Godot::print_error("invalid svg file:" + rawsvg_file, __func__, __FILE__, __LINE__);
-        }
-        else
-        {
-            _svg_doc = nullptr;
-            Godot::print_error(String("cannot open file (error code=") + Variant((int)ref_f->get_error()) + String("):") + rawsvg_file, __func__, __FILE__, __LINE__);
-        }
-    }
+    if ((bool)ProjectSettings::get_singleton()->get_setting("svgsprite/compress") == false)
+        _svg_doc = RawSvgLoader::get_singleton()->load(get_rawsvg_path(p_svg_file)).get();
+    else
+        _svg_doc = RawSvgLoader::get_singleton()->load(get_rawsvgz_path(p_svg_file)).get();
     _cache_dirty = true;
+#endif
     update();
 }
 
@@ -256,4 +237,9 @@ void SVGSprite::set_flip_v(bool p_flip_v)
 String SVGSprite::get_rawsvg_path(String path)
 {
     return String(_rawsvg_root).plus_file(path.get_file() + "-" + path.get_basename().sha256_text() + ".rawsvg");
+}
+
+String SVGSprite::get_rawsvgz_path(String path)
+{
+    return String(_rawsvg_root).plus_file(path.get_file() + "-" + path.get_basename().sha256_text() + ".rawsvgz");
 }

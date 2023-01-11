@@ -15,7 +15,7 @@ namespace godot
     {
         GODOT_CLASS(SVGSprite, Node2D)
 
-        std::unique_ptr<lunasvg::Document> _svg_doc;
+        lunasvg::Document *_svg_doc;
         // rotation and scaling
         Transform2D _transform;
         PoolByteArray _bitmap_byte_array;
@@ -36,6 +36,7 @@ namespace godot
 
         static void _register_methods();
         static String get_rawsvg_path(String path);
+        static String get_rawsvgz_path(String path);
 
         SVGSprite();
         ~SVGSprite();
