@@ -27,7 +27,7 @@ GDNative addon for dynamic svg rendering
    ```
    mkdir lunasvg_build
    cd lunasvg_build
-   cmake -DCMAKE_BUILD_TYPE=Debug/Release ../lunasvg
+   cmake -DCMAKE_BUILD_TYPE=Debug/Release -G Ninja ../lunasvg
    ninja
    cd ../../
    ```
@@ -47,7 +47,7 @@ GDNative addon for dynamic svg rendering
    ![image](https://user-images.githubusercontent.com/83043568/192416729-c99612d1-476c-4471-b414-46b34a64544d.png)
 
 ### Export project
-When exporting your project or resource package(\*.pck,\*.zip), make sure to add "_rawsvg/*" folder as a "non-resource folder".
+When you export your project or resource package(\*.pck,\*.zip), make sure to add **"_rawsvg/*"** folder as a **"non-resource folder"**.
 ![image](https://user-images.githubusercontent.com/83043568/194685009-51ce22cb-d1f9-4e08-b0d7-ffa311e5ec43.png)
 
 ### Note
