@@ -6,27 +6,18 @@
 ;   [section] ; section goes between []
 ;   param=value ; assign values to parameters
 
-config_version=4
-
-_global_script_classes=[ {
-"base": "Node2D",
-"class": "SVGSprite",
-"language": "NativeScript",
-"path": "res://addons/svg_sprite/svgsprite_library.gdns"
-} ]
-_global_script_class_icons={
-"SVGSprite": "res://addons/svgsprite/icon_svgsprite.svg"
-}
+config_version=5
 
 [application]
 
 config/name="godot-svgsprite"
 run/main_scene="res://demo/demo.tscn"
+config/features=PackedStringArray("4.0")
 config/icon="res://icon.png"
 
 [editor_plugins]
 
-enabled=PoolStringArray( "res://addons/svg_sprite/plugin.cfg" )
+enabled=PackedStringArray("res://addons/svg_sprite/plugin.cfg")
 
 [gui]
 
@@ -38,6 +29,7 @@ common/enable_pause_aware_picking=true
 
 [rendering]
 
+environment/defaults/default_environment="res://default_env.tres"
 environment/default_environment="res://default_env.tres"
 
 [svgsprite]

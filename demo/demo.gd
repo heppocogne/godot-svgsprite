@@ -1,8 +1,8 @@
 extends Node2D
 
-onready var svg_sprite:SVGSprite=$SVGSprite
-onready var svg_sprite2:SVGSprite=$SVGSprite2
-onready var svg_sprite3:SVGSprite=$SVGSprite3
+@onready var svg_sprite:SVGSprite=$SVGSprite
+@onready var svg_sprite2:SVGSprite=$SVGSprite2
+@onready var svg_sprite3:SVGSprite=$SVGSprite3
 
 
 func _ready():
