@@ -1,4 +1,0 @@
-[gd_scene format=3 uid="uid://ciei173yd5dx3"]
-
-[node name="SVGSprite" type="SVGSprite"]
-centered = true
