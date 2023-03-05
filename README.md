@@ -15,7 +15,7 @@ GDNative addon for dynamic svg rendering
    (Current directory=project root)
    ```
    cd cpp/godot-cpp
-   scons platform=<platform> generate_bindings=yes target=debug/release
+   scons platform=<platform> generate_bindings=yes target=editor/template_debug/template_release
    ```
    (wait a minute)
     
@@ -35,7 +35,7 @@ GDNative addon for dynamic svg rendering
    (Current directory=project root)
    ```
    mkdir bin
-   scons platform=<platform> target_name=libgodot-svgsprite target=debug/release
+   scons platform=<platform> target_name=libgodot-svgsprite target=editor/template_debug/template_release
    ```
 
 ### Enjoy the demo project!
