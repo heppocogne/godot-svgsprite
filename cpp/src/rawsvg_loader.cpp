@@ -32,6 +32,9 @@ RawSvgLoader::~RawSvgLoader()
 
 std::unique_ptr<lunasvg::Document> &RawSvgLoader::load(const String &path)
 {
+    if (path == "")
+        return std::unique_ptr<lunasvg::Document>(nullptr);
+
     if (docs_cache.count(path) == 0)
     {
         Ref<FileAccess> ref_f;
@@ -42,11 +45,14 @@ std::unique_ptr<lunasvg::Document> &RawSvgLoader::load(const String &path)
 
         if (ref_f != nullptr)
         {
-            const uint8_t *buf = ref_f->get_as_text().to_utf8_buffer().ptr();
-            docs_cache[path] = lunasvg::Document::loadFromData(reinterpret_cast<const char *>(buf));
+            PackedByteArray buf = ref_f->get_as_text().to_utf8_buffer();
+            char *chars = new char[buf.size()];
+            for (int i = 0; i < buf.size(); i++)
+                chars[i] = buf[i];
+            docs_cache[path] = lunasvg::Document::loadFromData(chars);
             if (!docs_cache[path])
             {
-                UtilityFunctions::push_error("invalid svg file:" + path, __func__, __FILE__, __LINE__);
+                UtilityFunctions::push_error("invalid rawsvg file:" + path, __func__, __FILE__, __LINE__);
                 docs_cache[path] = nullptr;
             }
         }

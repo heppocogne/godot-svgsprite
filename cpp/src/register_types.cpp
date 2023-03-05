@@ -7,6 +7,7 @@
 #include <godot_cpp/godot.hpp>
 
 #include "svgsprite.h"
+#include "rawsvg_loader.h"
 
 using namespace godot;
 
@@ -18,6 +19,7 @@ void initialize_svgsprite_module(ModuleInitializationLevel p_level)
     }
 
     ClassDB::register_class<godot::SVGSprite>();
+    RawSvgLoader::on_library_init();
 }
 
 void uninitialize_svgsprite_module(ModuleInitializationLevel p_level)
@@ -26,6 +28,7 @@ void uninitialize_svgsprite_module(ModuleInitializationLevel p_level)
     {
         return;
     }
+    RawSvgLoader::on_library_terminate();
 }
 
 extern "C"

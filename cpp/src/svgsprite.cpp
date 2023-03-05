@@ -8,6 +8,7 @@
 #include <godot_cpp/variant/vector2.hpp>
 #include <godot_cpp/variant/transform2d.hpp>
 #include <godot_cpp/classes/project_settings.hpp>
+
 #ifndef EDITOR_FEATURE_DISABLED
 #include <godot_cpp/classes/engine.hpp>
 #include <godot_cpp/classes/resource_loader.hpp>
@@ -21,7 +22,7 @@ using namespace godot;
 
 void SVGSprite::_bind_methods()
 {
-    ClassDB::bind_method(D_METHOD("_init"), &SVGSprite::_init);
+    // ClassDB::bind_method(D_METHOD("_init"), &SVGSprite::_init);
     // ClassDB::bind_method(D_METHOD("_ready"), &SVGSprite::_ready);
     // ClassDB::bind_method(D_METHOD("_draw"), &SVGSprite::_draw);
     ClassDB::bind_method(D_METHOD("_notification"), &SVGSprite::_notification);
@@ -53,23 +54,18 @@ SVGSprite::SVGSprite() : _cache_dirty(true),
                          _svg_doc(nullptr),
                          _ref_texture(memnew(ImageTexture)),
 #ifndef EDITOR_FEATURE_DISABLED
-                         _ref_prerasterized(nullptr)
+                         _ref_prerasterized(nullptr),
 #endif
+                         svg_file(""),
+                         centered(true),
+                         offset(Vector2()),
+                         flip_h(false),
+                         flip_v(false)
 {
 }
 
 SVGSprite::~SVGSprite()
 {
-}
-
-void SVGSprite::_init()
-{
-    // initialize properties here
-    svg_file = "";
-    centered = true;
-    offset = Vector2();
-    flip_h = false;
-    flip_v = false;
 }
 
 void SVGSprite::_ready()
@@ -139,11 +135,11 @@ void SVGSprite::_draw()
         bitmap.convertToRGBA();
 
         Ref<Image> ref_image = memnew(Image);
-        ref_image->create_from_data(w_int, h_int, false, Image::FORMAT_RGBA8, _bitmap_byte_array);
+        ref_image = Image::create_from_data(w_int, h_int, false, Image::FORMAT_RGBA8, _bitmap_byte_array);
         if (_ref_texture->get_size() == ref_image->get_size())
             _ref_texture->update(ref_image);
         else
-            _ref_texture->create_from_image(ref_image);
+            _ref_texture = ImageTexture::create_from_image(ref_image);
 
         _cache_dirty = false;
     }
@@ -180,16 +176,19 @@ void SVGSprite::set_svg_file(String p_svg_file)
 {
     svg_file = p_svg_file;
 #ifndef EDITOR_FEATURE_DISABLED
+
     if (svg_file == "")
         _ref_prerasterized = Ref<ImageTexture>(memnew(ImageTexture));
     else
         _ref_prerasterized = ResourceLoader::get_singleton()->load(svg_file);
-    if ((bool)ProjectSettings::get_singleton()->get_setting("svgsprite/compress") == false)
+#endif
+
+    if ((bool)ProjectSettings::get_singleton()->get_setting("svgsprite/compress", false) == false)
         _svg_doc = RawSvgLoader::get_singleton()->load(get_rawsvg_path(p_svg_file)).get();
     else
         _svg_doc = RawSvgLoader::get_singleton()->load(get_rawsvgz_path(p_svg_file)).get();
     _cache_dirty = true;
-#endif
+
     queue_redraw();
 }
 

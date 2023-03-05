@@ -41,7 +41,7 @@ namespace godot
         SVGSprite();
         ~SVGSprite();
 
-        void _init();
+        // void _init();
         void _ready();
         void _draw();
         void _notification(int what);

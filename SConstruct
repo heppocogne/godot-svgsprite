@@ -67,7 +67,7 @@ elif env['platform'] == "windows":
 
     env.Append(CCFLAGS = ['-DWIN32', '-D_WIN32', '-D_WINDOWS', '-W3', '-GR', '-D_CRT_SECURE_NO_WARNINGS', '-EHsc', '-DNDEBUG', '-MD', '-DTYPED_METHOD_BIND', '-DNOMINMAX'])
     if env['target'] != 'editor':
-        env.Append(CCFLAGS = ['-O2'])
+        env.Append(CCFLAGS = ['-O2', '-DEDITOR_FEATURE_DISABLED'])
 
 cpp_library += '.' + env['target'] + '.' + arch + '.lib'
 
