@@ -1,5 +1,6 @@
 #include "rawsvg_loader.h"
-#include <File.hpp>
+#include <godot_cpp/classes/file_access.hpp>
+#include <godot_cpp/variant/utility_functions.hpp>
 
 using namespace godot;
 
@@ -33,21 +34,19 @@ std::unique_ptr<lunasvg::Document> &RawSvgLoader::load(const String &path)
 {
     if (docs_cache.count(path) == 0)
     {
-        Ref<File> ref_f = File::_new();
-        Error err;
+        Ref<FileAccess> ref_f;
         if (path.ends_with(".rawsvg"))
-            err = ref_f->open(path, File::READ);
+            ref_f = FileAccess::open(path, FileAccess::READ);
         else if (path.ends_with(".rawsvgz"))
-            err = ref_f->open_compressed(path, File::READ, File::COMPRESSION_DEFLATE);
+            ref_f = FileAccess::open_compressed(path, FileAccess::READ, FileAccess::COMPRESSION_DEFLATE);
 
-        if (err == godot::Error::OK)
+        if (ref_f != nullptr)
         {
-            char *buf = ref_f->get_as_text().alloc_c_string();
-            docs_cache[path] = lunasvg::Document::loadFromData(const_cast<const char *>(buf));
-            godot::api->godot_free(buf);
+            const uint8_t *buf = ref_f->get_as_text().to_utf8_buffer().ptr();
+            docs_cache[path] = lunasvg::Document::loadFromData(reinterpret_cast<const char *>(buf));
             if (!docs_cache[path])
             {
-                Godot::print_error("invalid svg file:" + path, __func__, __FILE__, __LINE__);
+                UtilityFunctions::push_error("invalid svg file:" + path, __func__, __FILE__, __LINE__);
                 docs_cache[path] = nullptr;
             }
         }

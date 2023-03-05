@@ -1,10 +1,11 @@
 #ifndef SVGSPRITE_H
 #define SVGSPRITE_H
 
-#include <Godot.hpp>
-#include <Ref.hpp>
-#include <Node2D.hpp>
-#include <ImageTexture.hpp>
+#include <godot_cpp/godot.hpp>
+#include <godot_cpp/classes/ref.hpp>
+#include <godot_cpp/classes/node2d.hpp>
+#include <godot_cpp/classes/image_texture.hpp>
+#include <godot_cpp/variant/packed_byte_array.hpp>
 
 #include <memory>
 #include <lunasvg.h>
@@ -13,15 +14,15 @@ namespace godot
 {
     class SVGSprite : public Node2D
     {
-        GODOT_CLASS(SVGSprite, Node2D)
+        GDCLASS(SVGSprite, Node2D);
 
         lunasvg::Document *_svg_doc;
         // rotation and scaling
         Transform2D _transform;
-        PoolByteArray _bitmap_byte_array;
+        PackedByteArray _bitmap_byte_array;
         Ref<ImageTexture> _ref_texture;
 #ifndef EDITOR_FEATURE_DISABLED
-        Ref<Texture> _ref_prerasterized;
+        Ref<Texture2D> _ref_prerasterized;
 #endif
         bool _cache_dirty;
         constexpr static const char *_rawsvg_root = "res://_rawsvg";
@@ -30,11 +31,10 @@ namespace godot
         String svg_file;
         bool centered;
         Vector2 offset;
-        int texture_flags;
         bool flip_h;
         bool flip_v;
 
-        static void _register_methods();
+        static void _bind_methods();
         static String get_rawsvg_path(String path);
         static String get_rawsvgz_path(String path);
 
@@ -57,9 +57,6 @@ namespace godot
         bool get_flip_h() const { return flip_h; }
         void set_flip_v(bool p_flip_v);
         bool get_flip_v() const { return flip_v; }
-        void set_texture_flags(int p_texture_flags);
-        int get_texture_flags(void) const { return texture_flags; }
-
         Vector2 get_size() const;
     };
 }

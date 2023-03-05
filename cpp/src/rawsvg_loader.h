@@ -1,7 +1,8 @@
 #ifndef RAWSVG_LOADER_H
 #define RAWSVG_LOADER_H
 
-#include <Godot.hpp>
+#include <godot_cpp/godot.hpp>
+#include <godot_cpp/variant/string.hpp>
 
 #include <map>
 #include <memory>

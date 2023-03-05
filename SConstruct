@@ -10,7 +10,7 @@ opts = Variables([], ARGUMENTS)
 env = DefaultEnvironment()
 
 # Define our options
-opts.Add(EnumVariable('target', "Compilation target", 'debug', ['d', 'debug', 'r', 'release']))
+opts.Add(EnumVariable('target', "Compilation target", 'debug', ['editor','template_release','template_debug']))
 opts.Add(EnumVariable('platform', "Compilation platform", '', ['', 'windows', 'x11', 'linux', 'osx']))
 opts.Add(EnumVariable('p', "Compilation target, alias for 'platform'", '', ['', 'windows', 'x11', 'linux', 'osx']))
 opts.Add(BoolVariable('use_llvm', "Use the LLVM / Clang compiler", 'no'))
@@ -18,12 +18,11 @@ opts.Add(PathVariable('target_path', 'The path where the lib is installed.', 'bi
 opts.Add(PathVariable('target_name', 'The library name.', 'libgdexample', PathVariable.PathAccept))
 
 # Local dependency paths, adapt them to your setup
-godot_headers_path = "cpp/godot-cpp/godot-headers/"
 cpp_bindings_path = "cpp/godot-cpp/"
 cpp_library = "libgodot-cpp"
 
-# only support 64 at this time..
-bits = 64
+# only support 64 at for now...
+arch = "x86_64"
 
 # Updates the environment with the option variables.
 opts.Update(env)
@@ -44,7 +43,7 @@ if env['platform'] == '':
 if env['platform'] == "osx":
     env['target_path'] += 'osx/'
     cpp_library += '.osx'
-    if env['target'] in ('debug', 'd'):
+    if env['target'] == 'editor':
         env.Append(CCFLAGS = ['-g','-O2', '-arch', 'x86_64', '-std=c++17'])
         env.Append(LINKFLAGS = ['-arch', 'x86_64'])
     else:
@@ -66,25 +65,18 @@ elif env['platform'] == "windows":
     # that way you can run scons in a vs 2017 prompt and it will find all the required tools
     env.Append(ENV = os.environ)
 
-    env.Append(CCFLAGS = ['-DWIN32', '-D_WIN32', '-D_WINDOWS', '-W3', '-GR', '-D_CRT_SECURE_NO_WARNINGS'])
-    if env['target'] in ('debug', 'd'):
-        env.Append(CCFLAGS = ['-EHsc', '-D_DEBUG', '-MDd'])
-    else:
-        env.Append(CCFLAGS = ['-O2', '-EHsc', '-DNDEBUG', '-MD'])
+    env.Append(CCFLAGS = ['-DWIN32', '-D_WIN32', '-D_WINDOWS', '-W3', '-GR', '-D_CRT_SECURE_NO_WARNINGS', '-EHsc', '-DNDEBUG', '-MD', '-DTYPED_METHOD_BIND', '-DNOMINMAX'])
+    if env['target'] != 'editor':
+        env.Append(CCFLAGS = ['-O2'])
 
-if env['target'] in ('debug', 'd'):
-    cpp_library += '.debug'
-else:
-    cpp_library += '.release'
-
-cpp_library += '.' + str(bits)
+cpp_library += '.' + env['target'] + '.' + arch + '.lib'
 
 # make sure our binding library is properly includes
 env.Append(CPPPATH=[
-    godot_headers_path,
-    cpp_bindings_path + 'include/',
-    cpp_bindings_path + 'include/core/',
-    cpp_bindings_path + 'include/gen/'],
+        cpp_bindings_path + 'include/',
+        cpp_bindings_path + 'gen/include',
+        cpp_bindings_path + 'gdextension',
+    ],
 )
 ## godot-cpp
 env.Append(LIBPATH=[cpp_bindings_path + 'bin/'])

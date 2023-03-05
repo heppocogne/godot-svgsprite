@@ -1,14 +1,16 @@
 #include "svgsprite.h"
 
-#include <File.hpp>
-#include <Image.hpp>
-#include <Vector2.hpp>
-#include <Transform2D.hpp>
-#include <ProjectSettings.hpp>
-#include <GodotGlobal.hpp>
+#define TYPED_METHOD_BIND
+#define NOMINMAX
+
+#include <godot_cpp/classes/file_access.hpp>
+#include <godot_cpp/classes/image.hpp>
+#include <godot_cpp/variant/vector2.hpp>
+#include <godot_cpp/variant/transform2d.hpp>
+#include <godot_cpp/classes/project_settings.hpp>
 #ifndef EDITOR_FEATURE_DISABLED
-#include <Engine.hpp>
-#include <ResourceLoader.hpp>
+#include <godot_cpp/classes/engine.hpp>
+#include <godot_cpp/classes/resource_loader.hpp>
 #endif
 
 #include <algorithm>
@@ -17,38 +19,39 @@
 
 using namespace godot;
 
-void SVGSprite::_register_methods()
+void SVGSprite::_bind_methods()
 {
-    register_method("_init", &SVGSprite::_init);
-    register_method("_ready", &SVGSprite::_ready);
-    register_method("_draw", &SVGSprite::_draw);
-    register_method("_notification", &SVGSprite::_notification);
-    register_property<SVGSprite, String>("svg_file", &SVGSprite::set_svg_file, &SVGSprite::get_svg_file, "",
-                                         GODOT_METHOD_RPC_MODE_DISABLED, GODOT_PROPERTY_USAGE_DEFAULT, GODOT_PROPERTY_HINT_FILE, "*.svg");
-    register_method("set_svg_file", &SVGSprite::set_svg_file);
-    register_method("get_svg_file", &SVGSprite::get_svg_file);
-    register_property<SVGSprite, bool>("centered", &SVGSprite::set_centered, &SVGSprite::get_centered, true);
-    register_method("set_centered", &SVGSprite::set_centered);
-    register_method("get_centered", &SVGSprite::get_centered);
-    register_property<SVGSprite, Vector2>("offset", &SVGSprite::set_offset, &SVGSprite::get_offset, Vector2::ZERO);
-    register_method("set_offset", &SVGSprite::set_offset);
-    register_method("get_offset", &SVGSprite::get_offset);
-    register_property<SVGSprite, bool>("flip_h", &SVGSprite::set_flip_h, &SVGSprite::get_flip_h, false);
-    register_method("set_flip_h", &SVGSprite::set_flip_h);
-    register_method("get_flip_h", &SVGSprite::get_flip_h);
-    register_property<SVGSprite, bool>("flip_v", &SVGSprite::set_flip_v, &SVGSprite::get_flip_v, false);
-    register_method("set_flip_v", &SVGSprite::set_flip_v);
-    register_method("get_flip_v", &SVGSprite::get_flip_v);
-    register_property<SVGSprite, int>("texture_flags", &SVGSprite::set_texture_flags, &SVGSprite::get_texture_flags, 7,
-                                      GODOT_METHOD_RPC_MODE_DISABLED, GODOT_PROPERTY_USAGE_DEFAULT, GODOT_PROPERTY_HINT_FLAGS, "Mipmaps,Repeat,Filter,Anisotropic Filter,Convert to Linear,Mirrored Repeat,Video Surface");
-    register_method("set_texture_flags", &SVGSprite::set_texture_flags);
-    register_method("get_texture_flags", &SVGSprite::get_texture_flags);
-    register_method("get_size", &SVGSprite::get_size);
+    ClassDB::bind_method(D_METHOD("_init"), &SVGSprite::_init);
+    // ClassDB::bind_method(D_METHOD("_ready"), &SVGSprite::_ready);
+    // ClassDB::bind_method(D_METHOD("_draw"), &SVGSprite::_draw);
+    ClassDB::bind_method(D_METHOD("_notification"), &SVGSprite::_notification);
+
+    ClassDB::bind_method(D_METHOD("set_svg_file", "svg_file"), &SVGSprite::set_svg_file);
+    ClassDB::bind_method(D_METHOD("get_svg_file"), &SVGSprite::get_svg_file);
+    ADD_PROPERTY(PropertyInfo(Variant::STRING, "svg_file", godot::PROPERTY_HINT_FILE, "*.svg"), "set_svg_file", "get_svg_file");
+
+    ClassDB::bind_method(D_METHOD("set_centered", "centered"), &SVGSprite::set_centered);
+    ClassDB::bind_method(D_METHOD("get_centered"), &SVGSprite::get_centered);
+    ADD_PROPERTY(PropertyInfo(Variant::BOOL, "centered"), "set_centered", "get_centered");
+
+    ClassDB::bind_method(D_METHOD("set_offset", "offset"), &SVGSprite::set_offset);
+    ClassDB::bind_method(D_METHOD("get_offset"), &SVGSprite::get_offset);
+    ADD_PROPERTY(PropertyInfo(Variant::VECTOR2, "offset"), "set_offset", "get_offset");
+
+    ClassDB::bind_method(D_METHOD("set_flip_h", "flip_h"), &SVGSprite::set_flip_h);
+    ClassDB::bind_method(D_METHOD("get_flip_h"), &SVGSprite::get_flip_h);
+    ADD_PROPERTY(PropertyInfo(Variant::BOOL, "flip_h"), "set_flip_h", "get_flip_h");
+
+    ClassDB::bind_method(D_METHOD("set_flip_v", "flip_v"), &SVGSprite::set_flip_v);
+    ClassDB::bind_method(D_METHOD("get_flip_v"), &SVGSprite::get_flip_v);
+    ADD_PROPERTY(PropertyInfo(Variant::BOOL, "flip_v"), "set_flip_v", "get_flip_v");
+
+    ClassDB::bind_method(D_METHOD("get_size"), &SVGSprite::get_size);
 }
 
 SVGSprite::SVGSprite() : _cache_dirty(true),
                          _svg_doc(nullptr),
-                         _ref_texture(ImageTexture::_new()),
+                         _ref_texture(memnew(ImageTexture)),
 #ifndef EDITOR_FEATURE_DISABLED
                          _ref_prerasterized(nullptr)
 #endif
@@ -64,8 +67,7 @@ void SVGSprite::_init()
     // initialize properties here
     svg_file = "";
     centered = true;
-    offset = Vector2::ZERO;
-    texture_flags = 7;
+    offset = Vector2();
     flip_h = false;
     flip_v = false;
 }
@@ -120,7 +122,7 @@ void SVGSprite::_draw()
         const int h_int = ceil(h);
 
         _bitmap_byte_array.resize(4 * w_int * h_int);
-        unsigned char *const bitmap_write_ptr = _bitmap_byte_array.write().ptr();
+        unsigned char *const bitmap_write_ptr = _bitmap_byte_array.ptrw();
         memset(bitmap_write_ptr, 0, 4 * w_int * h_int);
 
         auto gs = tf2d.get_scale();
@@ -136,16 +138,12 @@ void SVGSprite::_draw()
         // Bitmap:argb -> Image:rgba
         bitmap.convertToRGBA();
 
-        Ref<Image> ref_image = Image::_new();
+        Ref<Image> ref_image = memnew(Image);
         ref_image->create_from_data(w_int, h_int, false, Image::FORMAT_RGBA8, _bitmap_byte_array);
         if (_ref_texture->get_size() == ref_image->get_size())
-            _ref_texture->set_data(ref_image);
+            _ref_texture->update(ref_image);
         else
-        {
-            const auto flags = _ref_texture->get_flags();
             _ref_texture->create_from_image(ref_image);
-            _ref_texture->set_flags(flags);
-        }
 
         _cache_dirty = false;
     }
@@ -174,7 +172,7 @@ void SVGSprite::_notification(int what)
             return;
 
         _cache_dirty = true;
-        update();
+        queue_redraw();
     }
 }
 
@@ -183,7 +181,7 @@ void SVGSprite::set_svg_file(String p_svg_file)
     svg_file = p_svg_file;
 #ifndef EDITOR_FEATURE_DISABLED
     if (svg_file == "")
-        _ref_prerasterized = nullptr;
+        _ref_prerasterized = Ref<ImageTexture>(memnew(ImageTexture));
     else
         _ref_prerasterized = ResourceLoader::get_singleton()->load(svg_file);
     if ((bool)ProjectSettings::get_singleton()->get_setting("svgsprite/compress") == false)
@@ -192,26 +190,19 @@ void SVGSprite::set_svg_file(String p_svg_file)
         _svg_doc = RawSvgLoader::get_singleton()->load(get_rawsvgz_path(p_svg_file)).get();
     _cache_dirty = true;
 #endif
-    update();
+    queue_redraw();
 }
 
 void SVGSprite::set_centered(bool p_centered)
 {
     centered = p_centered;
-    update();
+    queue_redraw();
 }
 
 void SVGSprite::set_offset(Vector2 p_offset)
 {
     offset = p_offset;
-    update();
-}
-
-void SVGSprite::set_texture_flags(int p_texture_flags)
-{
-    texture_flags = p_texture_flags;
-    _ref_texture->set_flags(texture_flags);
-    update();
+    queue_redraw();
 }
 
 Vector2 SVGSprite::get_size() const
@@ -219,27 +210,27 @@ Vector2 SVGSprite::get_size() const
     if (_svg_doc)
         return Vector2(_svg_doc->width(), _svg_doc->height());
     else
-        return Vector2::ZERO;
+        return Vector2();
 }
 
 void SVGSprite::set_flip_h(bool p_flip_h)
 {
     flip_h = p_flip_h;
-    update();
+    queue_redraw();
 }
 
 void SVGSprite::set_flip_v(bool p_flip_v)
 {
     flip_v = p_flip_v;
-    update();
+    queue_redraw();
 }
 
 String SVGSprite::get_rawsvg_path(String path)
 {
-    return String(_rawsvg_root).plus_file(path.get_file() + "-" + path.get_basename().sha256_text() + ".rawsvg");
+    return String(_rawsvg_root) + "/" + path.get_file() + "-" + path.get_basename().sha256_text() + ".rawsvg";
 }
 
 String SVGSprite::get_rawsvgz_path(String path)
 {
-    return String(_rawsvg_root).plus_file(path.get_file() + "-" + path.get_basename().sha256_text() + ".rawsvgz");
+    return String(_rawsvg_root) + "/" + path.get_file() + "-" + path.get_basename().sha256_text() + ".rawsvgz";
 }
