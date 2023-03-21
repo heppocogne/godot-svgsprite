@@ -1,5 +1,5 @@
 # godot-svgsprite
-GDNative addon for dynamic svg rendering  
+GDExtension addon for dynamic svg rendering  
 ![](screenshot.png)
 
 ## How to use
