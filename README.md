@@ -51,4 +51,4 @@ When you export your project or resource package(\*.pck,\*.zip), make sure to ad
 ![image](https://user-images.githubusercontent.com/83043568/194685009-51ce22cb-d1f9-4e08-b0d7-ffa311e5ec43.png)
 
 ### Note
-Note that this addon uses [lunasvg](https://github.com/sammycage/lunasvg) for svg rasterization, but godot3.x uses [nanosvg](https://github.com/memononen/nanosvg), so the rendering result may not be the same.
+Note that this addon uses [lunasvg](https://github.com/sammycage/lunasvg) for svg rasterization, but godot4.x uses [thorvg](https://github.com/thorvg/thorvg), so the rendering result may not be the same.
