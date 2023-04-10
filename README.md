@@ -7,7 +7,7 @@ GDExtension addon for dynamic svg rendering
 1. Clone this repository  
    (Current directory=project root)
    ```
-   git clone https://github.com/heppocogne/godot-svgsprite --recursive
+   git clone -b gdextension https://github.com/heppocogne/godot-svgsprite --recursive
    cd godot-svgsprite
    ```
 2. Build godot-cpp library  
