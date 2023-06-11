@@ -57,6 +57,7 @@ namespace godot
         bool get_flip_h() const { return flip_h; }
         void set_flip_v(bool p_flip_v);
         bool get_flip_v() const { return flip_v; }
+        Ref<Texture> get_current_texture() const { return _ref_texture; }
         void set_texture_flags(int p_texture_flags);
         int get_texture_flags(void) const { return texture_flags; }
 

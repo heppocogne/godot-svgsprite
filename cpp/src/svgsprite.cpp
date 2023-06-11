@@ -41,6 +41,7 @@ void SVGSprite::_register_methods()
     register_method("get_flip_v", &SVGSprite::get_flip_v);
     register_property<SVGSprite, int>("texture_flags", &SVGSprite::set_texture_flags, &SVGSprite::get_texture_flags, 7,
                                       GODOT_METHOD_RPC_MODE_DISABLED, GODOT_PROPERTY_USAGE_DEFAULT, GODOT_PROPERTY_HINT_FLAGS, "Mipmaps,Repeat,Filter,Anisotropic Filter,Convert to Linear,Mirrored Repeat,Video Surface");
+    register_method("get_current_texture", &SVGSprite::get_current_texture);
     register_method("set_texture_flags", &SVGSprite::set_texture_flags);
     register_method("get_texture_flags", &SVGSprite::get_texture_flags);
     register_method("get_size", &SVGSprite::get_size);
