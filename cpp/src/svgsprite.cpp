@@ -48,6 +48,8 @@ void SVGSprite::_bind_methods()
     ADD_PROPERTY(PropertyInfo(Variant::BOOL, "flip_v"), "set_flip_v", "get_flip_v");
 
     ClassDB::bind_method(D_METHOD("get_size"), &SVGSprite::get_size);
+
+    ClassDB::bind_method(D_METHOD("get_current_texture"), &SVGSprite::get_current_texture);
 }
 
 SVGSprite::SVGSprite() : _cache_dirty(true),

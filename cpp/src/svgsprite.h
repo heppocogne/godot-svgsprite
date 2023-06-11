@@ -58,6 +58,7 @@ namespace godot
         void set_flip_v(bool p_flip_v);
         bool get_flip_v() const { return flip_v; }
         Vector2 get_size() const;
+        Ref<Texture2D> get_current_texture() const { return _ref_texture; }
     };
 }
 
