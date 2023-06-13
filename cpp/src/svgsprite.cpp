@@ -189,6 +189,8 @@ void SVGSprite::set_svg_file(String p_svg_file)
         _svg_doc = RawSvgLoader::get_singleton()->load(get_rawsvg_path(p_svg_file)).get();
     else
         _svg_doc = RawSvgLoader::get_singleton()->load(get_rawsvgz_path(p_svg_file)).get();
+    if (!_svg_doc) // external file
+        _svg_doc = RawSvgLoader::get_singleton()->load(p_svg_file).get();
     _cache_dirty = true;
 
     queue_redraw();

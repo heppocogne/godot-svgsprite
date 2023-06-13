@@ -38,7 +38,7 @@ std::unique_ptr<lunasvg::Document> &RawSvgLoader::load(const String &path)
     if (docs_cache.count(path) == 0)
     {
         Ref<FileAccess> ref_f;
-        if (path.ends_with(".rawsvg"))
+        if (path.ends_with(".rawsvg") || path.ends_with(".svg"))
             ref_f = FileAccess::open(path, FileAccess::READ);
         else if (path.ends_with(".rawsvgz"))
             ref_f = FileAccess::open_compressed(path, FileAccess::READ, FileAccess::COMPRESSION_DEFLATE);
