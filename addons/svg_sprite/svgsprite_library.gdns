@@ -1,7 +1,8 @@
 [gd_resource type="NativeScript" load_steps=2 format=2]
 
 [sub_resource type="GDNativeLibrary" id=1]
-entry/Windows.64 = "res://bin/win64/libgodot-svgsprite.dll"
+entry/Windows.debug.64 = "res://bin/win64/libgodot-svgsprite-debug.dll"
+entry/Windows.release.64 = "res://bin/win64/libgodot-svgsprite-release.dll"
 dependency/Windows.64 = [  ]
 
 [resource]
