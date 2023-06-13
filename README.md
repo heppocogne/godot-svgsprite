@@ -1,5 +1,6 @@
 # godot-svgsprite
 GDExtension addon for dynamic svg rendering  
+Please use "master" branch for Godot 3.
 ![](screenshot.png)
 
 ## How to use
