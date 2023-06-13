@@ -187,12 +187,14 @@ void SVGSprite::set_svg_file(String p_svg_file)
         _ref_prerasterized = nullptr;
     else
         _ref_prerasterized = ResourceLoader::get_singleton()->load(svg_file);
+#endif
     if ((bool)ProjectSettings::get_singleton()->get_setting("svgsprite/compress") == false)
         _svg_doc = RawSvgLoader::get_singleton()->load(get_rawsvg_path(p_svg_file)).get();
     else
         _svg_doc = RawSvgLoader::get_singleton()->load(get_rawsvgz_path(p_svg_file)).get();
+    if (!_svg_doc)
+        _svg_doc = RawSvgLoader::get_singleton()->load(p_svg_file).get();
     _cache_dirty = true;
-#endif
     update();
 }
 
