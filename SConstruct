@@ -106,7 +106,7 @@ sources = []
 ## godot-svgsprite
 add_sources(sources, 'cpp/src', 'cpp')
 
-library = env.SharedLibrary(target=env['target_path'] + env['target_name'] , source=sources)
+library = env.SharedLibrary(target=env['target_path'] + env['target_name'] + "-" + env['target'], source=sources)
 
 Default(library)
 

@@ -1,0 +1,9 @@
+[configuration]
+
+entry_symbol = "svgsprite_library_init"
+
+[libraries]
+
+windows.editor.x86_64 = "res://bin/win64/libgodot-svgsprite-editor.dll"
+windows.debug.x86_64 = "res://bin/win64/libgodot-svgsprite-template_debug.dll"
+windows.release.x86_64 = "res://bin/win64/libgodot-svgsprite-template_release.dll"

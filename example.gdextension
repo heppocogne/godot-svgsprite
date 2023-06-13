@@ -1,7 +1,0 @@
-[configuration]
-
-entry_symbol = "svgsprite_library_init"
-
-[libraries]
-
-windows.64 = "res://bin/win64/libgodot-svgsprite.dll"
