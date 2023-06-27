@@ -42,7 +42,7 @@ Please use "master" branch for Godot 3.
 ### Enjoy the demo project!
 
 ### Install addon
-1. Copy "addons", "bin" folders and "svgsprite.gdextension" to your project folder  
+1. Copy "addons" and "bin" folders to your project folder  
    ![image](https://user-images.githubusercontent.com/83043568/192418076-98a9eaab-ac55-4b71-85c3-f62afe3929e5.png)
 2. Project > ProjectSetting > Plugins: Activate SVGSprite plugin  
    ![image](https://user-images.githubusercontent.com/83043568/192416729-c99612d1-476c-4471-b414-46b34a64544d.png)
