@@ -184,7 +184,7 @@ void SVGSprite::set_svg_file(String p_svg_file)
     svg_file = p_svg_file;
 #ifndef EDITOR_FEATURE_DISABLED
     if (svg_file == "")
-        _ref_prerasterized = nullptr;
+        _ref_prerasterized = Ref<ImageTexture>();
     else
         _ref_prerasterized = ResourceLoader::get_singleton()->load(svg_file);
 #endif
